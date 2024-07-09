@@ -1,130 +1,142 @@
 {
     "$schema": "https://app.flightcontrol.dev/schema.json",
     "environments": [
-      {
-        "id": "production",
-        "name": "Production",
-        "region": "us-east-2",
-        "source": {
-          "branch": "main"
-        },
-        "services": [
-          {
-            "id": "authentik-server",
-            "name": "Authentik Server",
-            "type": "web",
-            "buildType": "docker",
-            "dockerfilePath": "./Dockerfile",
-            "cpu": 2,
-            "memory": 4,
-            "minInstances": 1,
-            "maxInstances": 1,
-            "port": 9000,
-            "containerInsights": true,
+        {
+            "id": "production",
+            "name": "Production",
+            "region": "us-east-2",
+            "source": {
+                "branch": "main"
+            },
+            "services": [
+                {
+                    "id": "authentik-server",
+                    "name": "Authentik Server",
+                    "type": "web",
+                    "target": {
+                        "type": "ecs-ec2",
+                        "clusterMinInstances": 1,
+                        "clusterMaxInstances": 1,
+                        "clusterInstanceSize": "t4g.small"
+                    },
+                    "buildType": "docker",
+                    "dockerfilePath": "./Dockerfile",
+                    "cpu": 2,
+                    "memory": 4,
+                    "minInstances": 1,
+                    "maxInstances": 1,
+                    "port": 9000,
+                    "containerInsights": true,
+                    "envVariables": {
+                        "AUTHENTIK_REDIS__HOST": {
+                            "fromService": {
+                                "id": "redis",
+                                "value": "host"
+                            }
+                        },
+                        "AUTHENTIK_POSTGRESQL__HOST": {
+                            "fromService": {
+                                "id": "postgresql",
+                                "value": "host"
+                            }
+                        },
+                        "AUTHENTIK_POSTGRESQL__USER": {
+                            "fromService": {
+                                "id": "postgresql",
+                                "value": "username"
+                            }
+                        },
+                        "AUTHENTIK_POSTGRESQL__NAME": {
+                            "fromService": {
+                                "id": "postgresql",
+                                "value": "dbName"
+                            }
+                        },
+                        "AUTHENTIK_POSTGRESQL__PASSWORD": {
+                            "fromService": {
+                                "id": "postgresql",
+                                "value": "password"
+                            }
+                        },
+                        "AUTHENTIK_PORT": "9000",
+                        "AUTHENTIK_ERROR_REPORTING__ENABLED": "true",
+                        "AUTHENTIK_SECRET_KEY": "${AUTHENTIK_SECRET_KEY}"
+                    }
+                },
+                {
+                    "id": "authentik-worker",
+                    "name": "Authentik Worker",
+                    "type": "worker",
+                    "buildType": "docker",
+                    "target": {
+                        "type": "ecs-ec2",
+                        "clusterMinInstances": 1,
+                        "clusterMaxInstances": 1,
+                        "clusterInstanceSize": "t4g.small"
+                    },
+                    "dockerfilePath": "./Dockerfile",
+                    "cpu": 1,
+                    "memory": 2,
+                    "minInstances": 1,
+                    "maxInstances": 1,
+                    "startCommand": "worker",
+                    "envVariables": {
+                        "AUTHENTIK_REDIS__HOST": {
+                            "fromService": {
+                                "id": "redis",
+                                "value": "host"
+                            }
+                        },
+                        "AUTHENTIK_POSTGRESQL__HOST": {
+                            "fromService": {
+                                "id": "postgresql",
+                                "value": "host"
+                            }
+                        },
+                        "AUTHENTIK_POSTGRESQL__USER": {
+                            "fromService": {
+                                "id": "postgresql",
+                                "value": "username"
+                            }
+                        },
+                        "AUTHENTIK_POSTGRESQL__NAME": {
+                            "fromService": {
+                                "id": "postgresql",
+                                "value": "dbName"
+                            }
+                        },
+                        "AUTHENTIK_POSTGRESQL__PASSWORD": {
+                            "fromService": {
+                                "id": "postgresql",
+                                "value": "password"
+                            }
+                        },
+                        "AUTHENTIK_SECRET_KEY": "${AUTHENTIK_SECRET_KEY}"
+                    }
+                },
+                {
+                    "id": "postgresql",
+                    "name": "PostgreSQL",
+                    "type": "rds",
+                    "engine": "postgres",
+                    "engineVersion": "16",
+                    "instanceSize": "db.t3.micro",
+                    "storage": 20
+                },
+                {
+                    "id": "redis",
+                    "name": "Redis",
+                    "type": "elasticache",
+                    "engine": "redis",
+                    "engineVersion": "7.0",
+                    "instanceSize": "cache.t3.micro"
+                }
+            ],
             "envVariables": {
-              "AUTHENTIK_REDIS__HOST": {
-                "fromService": {
-                  "id": "redis",
-                  "value": "host"
+                "AUTHENTIK_SECRET_KEY": {
+                    "fromParameterStore": "AUTHENTIK_SECRET_KEY"
                 }
-              },
-              "AUTHENTIK_POSTGRESQL__HOST": {
-                "fromService": {
-                  "id": "postgresql",
-                  "value": "host"
-                }
-              },
-              "AUTHENTIK_POSTGRESQL__USER": {
-                "fromService": {
-                  "id": "postgresql",
-                  "value": "username"
-                }
-              },
-              "AUTHENTIK_POSTGRESQL__NAME": {
-                "fromService": {
-                  "id": "postgresql",
-                  "value": "dbName"
-                }
-              },
-              "AUTHENTIK_POSTGRESQL__PASSWORD": {
-                "fromService": {
-                  "id": "postgresql",
-                  "value": "password"
-                }
-              },
-              "AUTHENTIK_PORT": "9000",
-              "AUTHENTIK_ERROR_REPORTING__ENABLED": "true",
-              "AUTHENTIK_SECRET_KEY": "${AUTHENTIK_SECRET_KEY}"
             }
-          },
-          {
-            "id": "authentik-worker",
-            "name": "Authentik Worker",
-            "type": "worker",
-            "buildType": "docker",
-            "dockerfilePath": "./Dockerfile",
-            "cpu": 1,
-            "memory": 2,
-            "minInstances": 1,
-            "maxInstances": 1,
-            "startCommand": "worker",
-            "envVariables": {
-              "AUTHENTIK_REDIS__HOST": {
-                "fromService": {
-                  "id": "redis",
-                  "value": "host"
-                }
-              },
-              "AUTHENTIK_POSTGRESQL__HOST": {
-                "fromService": {
-                  "id": "postgresql",
-                  "value": "host"
-                }
-              },
-              "AUTHENTIK_POSTGRESQL__USER": {
-                "fromService": {
-                  "id": "postgresql",
-                  "value": "username"
-                }
-              },
-              "AUTHENTIK_POSTGRESQL__NAME": {
-                "fromService": {
-                  "id": "postgresql",
-                  "value": "dbName"
-                }
-              },
-              "AUTHENTIK_POSTGRESQL__PASSWORD": {
-                "fromService": {
-                  "id": "postgresql",
-                  "value": "password"
-                }
-              },
-              "AUTHENTIK_SECRET_KEY": "${AUTHENTIK_SECRET_KEY}"
-            }
-          },
-          {
-            "id": "postgresql",
-            "name": "PostgreSQL",
-            "type": "rds",
-            "engine": "postgres",
-            "engineVersion": "16",
-            "instanceSize": "db.t3.micro",
-            "storage": 20
-          },
-          {
-            "id": "redis",
-            "name": "Redis",
-            "type": "elasticache",
-            "engine": "redis",
-            "engineVersion": "7.0",
-            "instanceSize": "cache.t3.micro"
-          }
-        ],
-        "envVariables": {
-          "AUTHENTIK_SECRET_KEY": {
-            "fromParameterStore": "AUTHENTIK_SECRET_KEY"
-          }
         }
-      }
     ]
-  }
+}
