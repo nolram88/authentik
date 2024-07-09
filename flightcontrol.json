@@ -20,6 +20,7 @@
             "minInstances": 1,
             "maxInstances": 1,
             "port": 9000,
+            "containerInsights": true,
             "envVariables": {
               "AUTHENTIK_REDIS__HOST": {
                 "fromService": {
