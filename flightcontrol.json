@@ -17,12 +17,12 @@
                         "type": "ecs-ec2",
                         "clusterMinInstances": 1,
                         "clusterMaxInstances": 1,
-                        "clusterInstanceSize": "t4g.small"
+                        "clusterInstanceSize": "t3.small"
                     },
                     "buildType": "docker",
                     "dockerfilePath": "./Dockerfile",
                     "cpu": 2,
-                    "memory": 4,
+                    "memory": 2,
                     "minInstances": 1,
                     "maxInstances": 1,
                     "port": 9000,
@@ -68,12 +68,7 @@
                     "name": "Authentik Worker",
                     "type": "worker",
                     "buildType": "docker",
-                    "target": {
-                        "type": "ecs-ec2",
-                        "clusterMinInstances": 1,
-                        "clusterMaxInstances": 1,
-                        "clusterInstanceSize": "t4g.small"
-                    },
+
                     "dockerfilePath": "./Dockerfile",
                     "cpu": 1,
                     "memory": 2,
