@@ -52,7 +52,7 @@
                 }
               },
               "AUTHENTIK_PORT": "9000",
-              "AUTHENTIK_ERROR_REPORTING__ENABLED": "false",
+              "AUTHENTIK_ERROR_REPORTING__ENABLED": "true",
               "AUTHENTIK_SECRET_KEY": "${AUTHENTIK_SECRET_KEY}"
             }
           },
