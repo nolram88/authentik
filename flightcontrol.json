@@ -21,11 +21,39 @@
             "maxInstances": 1,
             "port": 9000,
             "envVariables": {
-              "AUTHENTIK_REDIS__HOST": "${redis.origin}",
-              "AUTHENTIK_POSTGRESQL__HOST": "${postgresql.origin}",
-              "AUTHENTIK_POSTGRESQL__USER": "${postgresql.username}",
-              "AUTHENTIK_POSTGRESQL__NAME": "${postgresql.dbName}",
-              "AUTHENTIK_POSTGRESQL__PASSWORD": "${postgresql.password}"
+              "AUTHENTIK_REDIS__HOST": {
+                "fromService": {
+                  "id": "redis",
+                  "value": "host"
+                }
+              },
+              "AUTHENTIK_POSTGRESQL__HOST": {
+                "fromService": {
+                  "id": "postgresql",
+                  "value": "host"
+                }
+              },
+              "AUTHENTIK_POSTGRESQL__USER": {
+                "fromService": {
+                  "id": "postgresql",
+                  "value": "username"
+                }
+              },
+              "AUTHENTIK_POSTGRESQL__NAME": {
+                "fromService": {
+                  "id": "postgresql",
+                  "value": "dbName"
+                }
+              },
+              "AUTHENTIK_POSTGRESQL__PASSWORD": {
+                "fromService": {
+                  "id": "postgresql",
+                  "value": "password"
+                }
+              },
+              "AUTHENTIK_PORT": "9000",
+              "AUTHENTIK_ERROR_REPORTING__ENABLED": "false",
+              "AUTHENTIK_SECRET_KEY": "${AUTHENTIK_SECRET_KEY}"
             }
           },
           {
@@ -40,11 +68,37 @@
             "maxInstances": 1,
             "startCommand": "worker",
             "envVariables": {
-              "AUTHENTIK_REDIS__HOST": "${redis.origin}",
-              "AUTHENTIK_POSTGRESQL__HOST": "${postgresql.origin}",
-              "AUTHENTIK_POSTGRESQL__USER": "${postgresql.username}",
-              "AUTHENTIK_POSTGRESQL__NAME": "${postgresql.dbName}",
-              "AUTHENTIK_POSTGRESQL__PASSWORD": "${postgresql.password}"
+              "AUTHENTIK_REDIS__HOST": {
+                "fromService": {
+                  "id": "redis",
+                  "value": "host"
+                }
+              },
+              "AUTHENTIK_POSTGRESQL__HOST": {
+                "fromService": {
+                  "id": "postgresql",
+                  "value": "host"
+                }
+              },
+              "AUTHENTIK_POSTGRESQL__USER": {
+                "fromService": {
+                  "id": "postgresql",
+                  "value": "username"
+                }
+              },
+              "AUTHENTIK_POSTGRESQL__NAME": {
+                "fromService": {
+                  "id": "postgresql",
+                  "value": "dbName"
+                }
+              },
+              "AUTHENTIK_POSTGRESQL__PASSWORD": {
+                "fromService": {
+                  "id": "postgresql",
+                  "value": "password"
+                }
+              },
+              "AUTHENTIK_SECRET_KEY": "${AUTHENTIK_SECRET_KEY}"
             }
           },
           {
@@ -64,7 +118,12 @@
             "engineVersion": "7.0",
             "instanceSize": "cache.t3.micro"
           }
-        ]
+        ],
+        "envVariables": {
+          "AUTHENTIK_SECRET_KEY": {
+            "fromParameterStore": "AUTHENTIK_SECRET_KEY"
+          }
+        }
       }
     ]
   }
