@@ -1,0 +1,70 @@
+{
+    "$schema": "https://app.flightcontrol.dev/schema.json",
+    "environments": [
+      {
+        "id": "production",
+        "name": "Production",
+        "region": "us-east-1",
+        "source": {
+          "branch": "main"
+        },
+        "services": [
+          {
+            "id": "authentik-server",
+            "name": "Authentik Server",
+            "type": "web",
+            "buildType": "docker",
+            "dockerfilePath": "./Dockerfile",
+            "cpu": 1,
+            "memory": 2,
+            "minInstances": 1,
+            "maxInstances": 1,
+            "port": 9000,
+            "envVariables": {
+              "AUTHENTIK_REDIS__HOST": "${redis.origin}",
+              "AUTHENTIK_POSTGRESQL__HOST": "${postgresql.origin}",
+              "AUTHENTIK_POSTGRESQL__USER": "${postgresql.username}",
+              "AUTHENTIK_POSTGRESQL__NAME": "${postgresql.dbName}",
+              "AUTHENTIK_POSTGRESQL__PASSWORD": "${postgresql.password}"
+            }
+          },
+          {
+            "id": "authentik-worker",
+            "name": "Authentik Worker",
+            "type": "worker",
+            "buildType": "docker",
+            "dockerfilePath": "./Dockerfile",
+            "cpu": 1,
+            "memory": 2,
+            "minInstances": 1,
+            "maxInstances": 1,
+            "startCommand": "worker",
+            "envVariables": {
+              "AUTHENTIK_REDIS__HOST": "${redis.origin}",
+              "AUTHENTIK_POSTGRESQL__HOST": "${postgresql.origin}",
+              "AUTHENTIK_POSTGRESQL__USER": "${postgresql.username}",
+              "AUTHENTIK_POSTGRESQL__NAME": "${postgresql.dbName}",
+              "AUTHENTIK_POSTGRESQL__PASSWORD": "${postgresql.password}"
+            }
+          },
+          {
+            "id": "postgresql",
+            "name": "PostgreSQL",
+            "type": "rds",
+            "engine": "postgres",
+            "engineVersion": "16",
+            "instanceSize": "db.t3.micro",
+            "storage": 20
+          },
+          {
+            "id": "redis",
+            "name": "Redis",
+            "type": "elasticache",
+            "engine": "redis",
+            "engineVersion": "7.0",
+            "instanceSize": "cache.t3.micro"
+          }
+        ]
+      }
+    ]
+  }
